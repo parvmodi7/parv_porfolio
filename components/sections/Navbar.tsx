@@ -68,9 +68,9 @@ export function Navbar() {
                     </div>
 
                     {/* CTA Button */}
-                    <div className="h-full flex items-center py-2">
+                    <div className="h-full flex items-center py-3 ml-2">
                         <Button
-                            className="hidden md:flex bg-foreground text-background hover:bg-foreground/80 rounded-lg font-medium px-4 h-full items-center gap-2"
+                            className="hidden md:flex bg-foreground text-background hover:bg-foreground/80 rounded-md font-medium px-4 py-1 h-full items-center gap-2"
                             onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                         >
                             Let's Talk

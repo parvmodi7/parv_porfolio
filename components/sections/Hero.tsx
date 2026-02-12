@@ -30,7 +30,7 @@ export function Hero() {
     const translateZ = useTransform(mouseY, [-0.5, 0.5], ["10px", "-10px"])
 
     return (
-        <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden bg-background">
+        <section className="relative min-h-screen flex items-center justify- sm:mt-0 mt-5 pt-20 overflow-hidden bg-background">
             {/* Background Elements */}
             <div className="absolute inset-0 z-0">
                 <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
