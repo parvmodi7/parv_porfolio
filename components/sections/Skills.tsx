@@ -1,6 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Marquee from '@/components/ui/marquee'
+import { cn } from '@/lib/utils'
 
 const skills = [
     { name: "React", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg", color: "#61DAFB" },
@@ -15,83 +17,70 @@ const skills = [
     { name: "Firebase", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg", color: "#FFCA28" },
     { name: "Redux", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg", color: "#764ABC" },
     { name: "Three.js", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/threejs/threejs-original.svg", color: "#ffffff", invert: true },
+    // Duplicates for fuller rows if needed, or splitting
 ]
+
+// Split skills for rows
+const row1 = skills.slice(0, 6)
+const row2 = skills.slice(6, 12)
+
+const SkillCard = ({ skill }: { skill: typeof skills[0] }) => {
+    return (
+        <div className="flex items-center gap-4 p-4 pr-8 bg-secondary/10 border border-white/5 rounded-xl backdrop-blur-sm hover:bg-secondary/20 transition-colors mx-4 w-[250px] group cursor-default">
+            <div className="relative w-12 h-12 flex items-center justify-center bg-background/50 rounded-lg p-2 border border-white/5 group-hover:border-primary/50 transition-colors">
+                <img
+                    src={skill.icon}
+                    alt={skill.name}
+                    className={cn("w-full h-full object-contain transition-transform duration-300 group-hover:scale-110", skill.invert ? 'dark:invert' : '')}
+                />
+            </div>
+            <div className="flex flex-col">
+                <span className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">{skill.name}</span>
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">Expertise</span>
+            </div>
+            <div
+                className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none"
+                style={{ backgroundColor: skill.color }}
+            />
+        </div>
+    )
+}
 
 export function Skills() {
     return (
-        <section id="skills" className="py-24 bg-[#020817] relative overflow-hidden flex items-center justify-center">
+        <section id="skills" className="py-24 bg-background relative overflow-hidden flex flex-col items-center justify-center">
 
-            {/* Background Accents similar to reference if needed, but keeping clean for now */}
+            <div className="container px-6 mx-auto relative z-10 mb-16 text-center">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                >
+                    <h2 className="text-3xl md:text-5xl font-bold mb-4">
+                        Technical <span className="text-primary">Arsenal</span>
+                    </h2>
+                    <p className="text-muted-foreground max-w-2xl mx-auto">
+                        The tools and technologies I use to bring ideas to life.
+                    </p>
+                </motion.div>
+            </div>
 
-            <div className="container px-6 mx-auto relative z-10 flex flex-col md:flex-row gap-12">
+            <div className="w-full max-w-[100vw] relative flex flex-col gap-8">
+                {/* Gradient Masks */}
+                <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
+                <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
 
-                {/* Vertical Text Label */}
-                <div className="hidden md:flex flex-col justify-center items-center">
-                    <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                        className="writing-mode-vertical rotate-180"
-                    >
-                        <h2 className="text-6xl font-bold text-muted-foreground/20 tracking-widest uppercase" style={{ writingMode: 'vertical-rl' }}>
-                            Skills
-                        </h2>
-                    </motion.div>
-                    {/* Yellow/Primary accent line next to text */}
-                    <motion.div
-                        initial={{ height: 0 }}
-                        whileInView={{ height: '100px' }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
-                        className="w-1 bg-primary mt-4"
-                    />
-                </div>
-
-                {/* Mobile Heading */}
-                <div className="md:hidden text-center mb-8">
-                    <h2 className="text-3xl font-bold text-foreground uppercase tracking-widest">Skills</h2>
-                    <div className="w-12 h-1 bg-primary mx-auto mt-2" />
-                </div>
-
-                {/* Skills Grid */}
-                <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-6">
-                    {skills.map((skill, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.05 }}
-                            whileHover={{ scale: 1.05, y: -5 }}
-                            className="group relative aspect-square"
-                        >
-                            <div className="absolute inset-0 bg-[#020800] rounded-xl border border-[#222] shadow-xl transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-primary/10 flex flex-col items-center justify-center gap-4 p-4">
-
-                                {/* Icon Container */}
-                                <div className="relative w-16 h-16 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 grayscale group-hover:grayscale-0 opacity-70 group-hover:opacity-100">
-                                    {/* Using img tag for SVGs from devicon for reliability and "beauty" matching original logos */}
-                                    <img
-                                        src={skill.icon}
-                                        alt={skill.name}
-                                        className={`w-full h-full object-contain ${skill.invert ? 'dark:invert' : ''}`}
-                                    />
-                                </div>
-
-                                {/* Skill Name */}
-                                <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider group-hover:text-primary transition-colors">
-                                    {skill.name}cha
-                                </span>
-
-                                {/* Hover Glow */}
-                                <div
-                                    className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-10 transition-opacity duration-300 blur-md pointer-events-none"
-                                    style={{ backgroundColor: skill.color }}
-                                />
-                            </div>
-                        </motion.div>
+                <Marquee pauseOnHover className="[--duration:20s]">
+                    {row1.map((skill, index) => (
+                        <SkillCard key={index} skill={skill} />
                     ))}
-                </div>
+                </Marquee>
+
+                <Marquee pauseOnHover reverse className="[--duration:20s]">
+                    {row2.map((skill, index) => (
+                        <SkillCard key={index} skill={skill} />
+                    ))}
+                </Marquee>
             </div>
         </section>
     )

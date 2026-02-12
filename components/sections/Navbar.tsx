@@ -1,141 +1,119 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Github, Linkedin, Mail } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { ArrowUpRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 const navItems = [
-    { name: 'About', href: '#about' },
-    { name: 'Experience', href: '#experience' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'About', href: '#about', label: 'Who I am' },
+    { name: 'Experience', href: '#experience', label: 'My Journey' },
+    { name: 'Projects', href: '#projects', label: 'What I built' },
+    { name: 'Contact', href: '#contact', label: 'Say Hello' },
 ]
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false)
-    const [scrolled, setScrolled] = useState(false)
-    const [activeSection, setActiveSection] = useState('')
+    const containerRef = useRef<HTMLDivElement>(null)
 
+    // Close on click outside
     useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 50)
-
-            // Determine active section
-            const sections = navItems.map(item => item.href.substring(1))
-            const currentSection = sections.find(section => {
-                const element = document.getElementById(section)
-                if (element) {
-                    const rect = element.getBoundingClientRect()
-                    return rect.top <= 100 && rect.bottom >= 100
-                }
-                return false
-            })
-
-            if (currentSection) {
-                setActiveSection(currentSection)
+        const handleClickOutside = (event: MouseEvent) => {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+                setIsOpen(false)
             }
         }
-
-        window.addEventListener('scroll', handleScroll)
-        return () => window.removeEventListener('scroll', handleScroll)
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
     return (
-        <motion.nav
-            initial={{ y: -100 }}
-            animate={{ y: 0 }}
-            className={cn(
-                "fixed top-0 left-0 right-0 z-50 transition-all duration-300 backdrop-blur-md border-b",
-                scrolled ? "bg-background/80 border-border/50 py-4" : "bg-transparent border-transparent py-6"
-            )}
-        >
-            <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-                <motion.a
-                    href="#"
-                    className="text-2xl font-bold tracking-tighter hover:text-primary transition-colors cursor-pointer"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                >
-                    _parv<span className="text-primary">.dev</span>
-                </motion.a>
+        <div className="fixed top-8 left-1/2 -translate-x-1/2 w-[90%] max-w-[800px] z-50 transition-all duration-300">
+            <motion.div
+                ref={containerRef}
+                layout
+                initial={{ height: 60 }}
+                animate={{ height: isOpen ? 'auto' : 60 }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className={cn(
+                    "block bg-background/80 backdrop-blur-xl border border-white/10 rounded-xl shadow-lg relative overflow-hidden",
+                    isOpen ? "rounded-[24px]" : "rounded-xl" // Slightly rounder when open for aesthetics
+                )}
+            >
+                {/* Top Bar */}
+                <div className="relative h-[60px] flex items-center justify-between px-4 z-20 w-full bg-background/50">
+                    {/* Hamburger */}
+                    <button
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="h-full flex flex-col items-center justify-center cursor-pointer gap-[6px] w-[50px] group"
+                    >
+                        <motion.div
+                            animate={isOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
+                            className="w-[30px] h-[2px] bg-foreground transition-all origin-center"
+                        />
+                        <motion.div
+                            animate={isOpen ? { opacity: 0 } : { opacity: 1 }}
+                            className="w-[30px] h-[2px] bg-foreground transition-all origin-center"
+                        />
+                        <motion.div
+                            animate={isOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
+                            className="w-[30px] h-[2px] bg-foreground transition-all origin-center"
+                        />
+                    </button>
 
-                {/* Desktop Nav */}
-                <div className="hidden md:flex items-center gap-8">
-                    {navItems.map((item) => (
-                        <a
-                            key={item.name}
-                            href={item.href}
-                            className={cn(
-                                "text-sm font-medium transition-colors hover:text-primary relative group",
-                                activeSection === item.href.substring(1) ? "text-primary" : "text-muted-foreground"
-                            )}
+                    {/* Logo - Centered Absolutely */}
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                        <span className="font-bold text-xl tracking-tighter">_parv<span className="text-primary">.dev</span></span>
+                    </div>
+
+                    {/* CTA Button */}
+                    <div className="h-full flex items-center py-2">
+                        <Button
+                            className="hidden md:flex bg-foreground text-background hover:bg-foreground/80 rounded-lg font-medium px-4 h-full items-center gap-2"
+                            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                         >
-                            {item.name}
-                            <span className={cn(
-                                "absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full",
-                                activeSection === item.href.substring(1) && "w-full"
-                            )} />
-                        </a>
-                    ))}
-
-                    <div className="h-6 w-px bg-border mx-2" />
-
-                    <div className="flex gap-4">
-                        <a href="https://github.com" target="_blank" className="text-muted-foreground hover:text-foreground transition-colors">
-                            <Github className="w-5 h-5" />
-                        </a>
-                        <a href="https://linkedin.com" target="_blank" className="text-muted-foreground hover:text-foreground transition-colors">
-                            <Linkedin className="w-5 h-5" />
-                        </a>
+                            Let's Talk
+                        </Button>
                     </div>
                 </div>
 
-                {/* Mobile Menu Button */}
-                <button
-                    className="md:hidden text-foreground p-2"
-                    onClick={() => setIsOpen(!isOpen)}
-                >
-                    {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                </button>
-            </div>
-
-            {/* Mobile Menu */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden bg-background/95 backdrop-blur-xl border-b border-border overflow-hidden"
-                    >
-                        <div className="flex flex-col p-6 gap-4">
-                            {navItems.map((item) => (
-                                <a
+                {/* Expanded Content */}
+                <AnimatePresence>
+                    {isOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2, delay: 0.1 }}
+                            className="p-2 pt-0 grid grid-cols-1 md:grid-cols-4 gap-2 pb-2"
+                        >
+                            {navItems.map((item, i) => (
+                                <motion.a
                                     key={item.name}
                                     href={item.href}
-                                    className="text-lg font-medium text-foreground hover:text-primary transition-colors"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.1 + (i * 0.05) }}
                                     onClick={() => setIsOpen(false)}
+                                    className="group relative flex flex-col justify-between p-4 h-[120px] rounded-lg bg-secondary/10 hover:bg-secondary/20 border border-transparent hover:border-border/50 transition-all cursor-pointer"
                                 >
-                                    {item.name}
-                                </a>
+                                    <div className="flex justify-between items-start">
+                                        <span className="text-4xl font-light text-muted-foreground/20 font-mono">0{i + 1}</span>
+                                        <ArrowUpRight className="w-5 h-5 opacity-0 -translate-x-2 translate-y-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-300 text-primary" />
+                                    </div>
+
+                                    <div>
+                                        <span className="block text-xs text-muted-foreground uppercase tracking-wider mb-1">{item.label}</span>
+                                        <span className="text-lg font-medium text-foreground group-hover:text-primary transition-colors">{item.name}</span>
+                                    </div>
+                                </motion.a>
                             ))}
-                            <div className="flex gap-4 pt-4 border-t border-border">
-                                <a href="https://github.com" target="_blank" className="p-2 bg-secondary rounded-full">
-                                    <Github className="w-5 h-5" />
-                                </a>
-                                <a href="https://linkedin.com" target="_blank" className="p-2 bg-secondary rounded-full">
-                                    <Linkedin className="w-5 h-5" />
-                                </a>
-                                <a href="mailto:parvmodi11@gmail.com" className="p-2 bg-secondary rounded-full">
-                                    <Mail className="w-5 h-5" />
-                                </a>
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </motion.nav>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+            </motion.div>
+        </div>
     )
 }
